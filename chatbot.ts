@@ -1,8 +1,12 @@
 import OpenAI from "openai";
+import * as fs from "fs";
 var readlineSync = require("readline-sync");
 import * as dotenv from "dotenv";
 
 dotenv.config();
+
+const chatbot_prompt = "chatbot_prompt.txt";
+const systemPrompt = fs.readFileSync(chatbot_prompt, "utf-8");
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY, // Lấy API key từ biến môi trường
@@ -21,7 +25,11 @@ async function chat() {
     try {
       const response = await openai.chat.completions.create({
         model: "gpt-4o", // Dùng model mới nhất
-        messages: [{ role: "user", content: userInput }],
+        temperature: 0.9,
+        messages: [
+          { role: "user", content: userInput },
+          { role: "system", content: systemPrompt },
+        ],
       });
 
       const botResponse =
